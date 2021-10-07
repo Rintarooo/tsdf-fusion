@@ -118,7 +118,7 @@ int main(int argc, char * argv[]) {
   // Read base frame camera pose
   std::ostringstream base_frame_prefix;
   // base_frame_prefix << std::setw(6) << std::setfill('0') << base_frame_idx;
-  base_frame_prefix << std::setw(1) << std::setfill('0') << base_frame_idx;
+  base_frame_prefix << base_frame_idx;
   // std::string base2world_file = data_path + "/frame-" + base_frame_prefix.str() + ".pose.txt";
   std::string base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose.txt";
   std::vector<float> base2world_vec = LoadMatrixFromFile(base2world_file, 4, 4);
@@ -158,7 +158,7 @@ int main(int argc, char * argv[]) {
 
     std::ostringstream curr_frame_prefix;
     // curr_frame_prefix << std::setw(6) << std::setfill('0') << frame_idx;
-    curr_frame_prefix << std::setw(1) << std::setfill('0') << frame_idx;
+    curr_frame_prefix << frame_idx;
 
 
     // // Read current frame depth
