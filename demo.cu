@@ -120,7 +120,8 @@ int main(int argc, char * argv[]) {
   // base_frame_prefix << std::setw(6) << std::setfill('0') << base_frame_idx;
   base_frame_prefix << base_frame_idx;
   // std::string base2world_file = data_path + "/frame-" + base_frame_prefix.str() + ".pose.txt";
-  std::string base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose.txt";
+  // std::string base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose.txt";
+  std::string base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose-new.txt";
   std::vector<float> base2world_vec = LoadMatrixFromFile(base2world_file, 4, 4);
   std::copy(base2world_vec.begin(), base2world_vec.end(), base2world);
 
@@ -168,7 +169,8 @@ int main(int argc, char * argv[]) {
 
     // Read base frame camera pose
     // std::string cam2world_file = data_path + "/frame-" + curr_frame_prefix.str() + ".pose.txt";
-    std::string cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose.txt";
+    // std::string cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose.txt";
+    std::string cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose-new.txt";
     std::vector<float> cam2world_vec = LoadMatrixFromFile(cam2world_file, 4, 4);
     std::copy(cam2world_vec.begin(), cam2world_vec.end(), cam2world);
 

@@ -8,7 +8,8 @@
 #include <iomanip> // https://stackoverflow.com/questions/225362/convert-a-number-to-a-string-with-specified-length-in-c
 
 
-void file_writer(const std::string &filename){
+void file_writer(const std::string &filename,
+    const cv::Mat &Rcw, const cv::Mat &tcw){
     std::ofstream file2;
     file2.open(filename, std::ios::out);
     float* Rcw_ptr = (float*)Rcw.data;// Mat.data returns uchar*, so cast into float* 
@@ -63,27 +64,27 @@ void file_loader (const std::string &filename,
 
    // line1
    std::getline(ifs, line);
-   std::stringstream ss(line);// ss << line;
+   std::stringstream ss0(line);// ss << line;
    float R00, R01, R02;
-   ss >> R00 >> R01 >> R02; 
+   ss0 >> R00 >> R01 >> R02; 
 
    // line2
    std::getline(ifs, line);
-   std::stringstream ss(line);// ss << line;
+   std::stringstream ss1(line);// ss << line;
    float R10, R11, R12;
-   ss >> R10 >> R11 >> R12; 
+   ss1 >> R10 >> R11 >> R12; 
    
     // line3
    std::getline(ifs, line);
-   std::stringstream ss(line);// ss << line;
+   std::stringstream ss2(line);// ss << line;
    float R20, R21, R22;
-   ss >> R20 >> R21 >> R22; 
+   ss2 >> R20 >> R21 >> R22; 
   
     // line4
    std::getline(ifs, line);
-   std::stringstream ss(line);// ss << line;
+   std::stringstream ss3(line);// ss << line;
    float tx, ty, tz;
-   ss >> tx >> ty >> tz; 
+   ss3 >> tx >> ty >> tz; 
   
    cv::Mat Rwc = (cv::Mat_<float>(3,3) <<
 				   R00, R01, R02,
@@ -95,13 +96,25 @@ void file_loader (const std::string &filename,
 	cv::Mat Rcw, tcw;
 	getRcw_fromRwc(Rwc, twc, Rcw, tcw);
 	
-	file_writer(filename_dst);
+	file_writer(filename_dst, Rcw, tcw);
     ifs.close();
 }
 
-int main(){
-	const std::string src= "inv2-pose.txt";
-    const std::string dst= "inv2-pose-new.txt";
-	file_loader(src, dst);
+int main(int argc, char* argv[]){
+	// if (argc < 2){
+ //        std::cout << "Usage: ./build/main src dst\n";
+ //        std::cerr << "argc: " << argc << "should be 3\n";
+ //        return 1;
+ //    }
+ //    const std::string src= argv[1];;
+ //    const std::string dst= argv[2];;
+    
+    // const std::string src= "inv2-pose.txt";
+    // const std::string dst= "inv2-pose-new.txt";
+	for (int i = 2; i <= 8; i++){
+        const std::string src= "inv" + std::to_string(i) + "-pose.txt";
+        const std::string dst= "inv" + std::to_string(i) + "-pose-new.txt";
+        file_loader(src, dst);
+    }
     return 0;
 }
