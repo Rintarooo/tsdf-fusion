@@ -69,23 +69,28 @@ void Integrate(float * cam_K, float * cam2base, float * depth_im,
 int main(int argc, char * argv[]) {
 
   // Location of camera intrinsic file
-  // std::string cam_K_file = "data/camera-intrinsics.txt";
-  std::string cam_K_file = "fountain/camera-intrinsics.txt";
+  std::string cam_K_file = "data/camera-intrinsics.txt";
+  // std::string cam_K_file = "fountain/camera-intrinsics.txt";
 
 
   // Location of folder containing RGB-D frames and camera pose files
-  // std::string data_path = "data/rgbd-frames";
-  std::string data_path = "fountain";
-  int base_frame_idx = 2;//150;
-  int first_frame_idx = 2;//150;
-  float num_frames = 7;//50;
+  std::string data_path = "data/rgbd-frames";
+  // std::string data_path = "fountain";
+  int base_frame_idx = 150;
+  int first_frame_idx = 150;
+  float num_frames = 50;
+  // int base_frame_idx = 2;//150;
+  // int first_frame_idx = 2;//150;
+  // float num_frames = 7;//50;
 
   float cam_K[3 * 3];
   float base2world[4 * 4];
   float cam2base[4 * 4];
   float cam2world[4 * 4];
-  int im_width = 768;//640;
-  int im_height = 512;//480;
+  int im_width = 640;
+  int im_height = 480;
+  // int im_width = 768;//640;
+  // int im_height = 512;//480;
   float depth_im[im_height * im_width];
 
   // Voxel grid parameters (change these to change voxel grid resolution, etc.)
@@ -118,11 +123,11 @@ int main(int argc, char * argv[]) {
 
   // Read base frame camera pose
   std::ostringstream base_frame_prefix;
-  // base_frame_prefix << std::setw(6) << std::setfill('0') << base_frame_idx;
-  base_frame_prefix << base_frame_idx;
-  // std::string base2world_file = data_path + "/frame-" + base_frame_prefix.str() + ".pose.txt";
-  // std::string base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose.txt";
-  std::string base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose-new.txt";
+  base_frame_prefix << std::setw(6) << std::setfill('0') << base_frame_idx;
+  // base_frame_prefix << base_frame_idx;
+  std::string base2world_file = data_path + "/frame-" + base_frame_prefix.str() + ".pose.txt";
+  // // std::string base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose.txt";
+  // std::string base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose-new.txt";
   std::vector<float> base2world_vec = LoadMatrixFromFile(base2world_file, 4, 4);
   std::copy(base2world_vec.begin(), base2world_vec.end(), base2world);
 
@@ -159,19 +164,19 @@ int main(int argc, char * argv[]) {
   for (int frame_idx = first_frame_idx; frame_idx < first_frame_idx + (int)num_frames; ++frame_idx) {
 
     std::ostringstream curr_frame_prefix;
-    // curr_frame_prefix << std::setw(6) << std::setfill('0') << frame_idx;
-    curr_frame_prefix << frame_idx;
+    curr_frame_prefix << std::setw(6) << std::setfill('0') << frame_idx;
+    // curr_frame_prefix << frame_idx;
 
 
     // // Read current frame depth
-    // std::string depth_im_file = data_path + "/frame-" + curr_frame_prefix.str() + ".depth.png";
-    std::string depth_im_file = data_path + "/inv" + curr_frame_prefix.str() + ".png";
+    std::string depth_im_file = data_path + "/frame-" + curr_frame_prefix.str() + ".depth.png";
+    // std::string depth_im_file = data_path + "/inv" + curr_frame_prefix.str() + ".png";
     ReadDepth(depth_im_file, im_height, im_width, depth_im);
 
     // Read base frame camera pose
-    // std::string cam2world_file = data_path + "/frame-" + curr_frame_prefix.str() + ".pose.txt";
-    // std::string cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose.txt";
-    std::string cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose-new.txt";
+    std::string cam2world_file = data_path + "/frame-" + curr_frame_prefix.str() + ".pose.txt";
+    // // std::string cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose.txt";
+    // std::string cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose-new.txt";
     std::vector<float> cam2world_vec = LoadMatrixFromFile(cam2world_file, 4, 4);
     std::copy(cam2world_vec.begin(), cam2world_vec.end(), cam2world);
 
