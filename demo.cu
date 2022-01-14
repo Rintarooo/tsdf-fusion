@@ -68,8 +68,8 @@ void Integrate(float * cam_K, float * cam2base, float * depth_im,
 // Volume is aligned with respect to the camera coordinates of the first frame (a.k.a. base frame)
 int main(int argc, char * argv[]) {
   // Location of folder containing RGB-D frames and camera pose files
-  std::string data_path = "data/rgbd-frames";
-  // std::string data_path = "fountain";
+  // std::string data_path = "data/rgbd-frames";
+  std::string data_path = "fountain";
 
   // Location of camera intrinsic file
   std::string cam_K_file = "data/camera-intrinsics.txt";
@@ -102,11 +102,25 @@ int main(int argc, char * argv[]) {
   float voxel_grid_origin_x = -1.5f; // Location of voxel grid origin in base frame camera coordinates
   float voxel_grid_origin_y = -1.5f;
   float voxel_grid_origin_z = 0.5f;
+  if(data_path == "fountain"){
+    voxel_grid_origin_x = -4.0f;// position in base frame
+    voxel_grid_origin_y = -4.0f;
+    voxel_grid_origin_z = 4.0f;
+  }
   float voxel_size = 0.006f;
   float trunc_margin = voxel_size * 5;
+  if(data_path == "fountain"){
+    voxel_size = 0.030f;
+    trunc_margin = voxel_size * 5;
+  }
   int voxel_grid_dim_x = 500;
   int voxel_grid_dim_y = 500;
   int voxel_grid_dim_z = 500;
+  // if(data_path == "fountain"){
+  //   voxel_grid_dim_x = 1000;
+  //   voxel_grid_dim_y = 1000;
+  //   voxel_grid_dim_z = 1000;
+  // }
 
   // Manual parameters
   if (argc > 1) {

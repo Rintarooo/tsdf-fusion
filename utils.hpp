@@ -64,10 +64,34 @@ std::vector<float> LoadMatrixFromFile(std::string filename, int M, int N) {
   return matrix;
 }
 
+void imwrite_depth(std::string png, int H, int W, float* src_ptr){
+   /*
+   NORM_MINMAX
+   https://www.codetd.com/ja/article/7031167
+   */
+   // CV_Assert(src.type() == CV_32FC1);
+   const float minv = 4, maxv = 14;// minv = 1./14., maxv = 1./4.;
+   cv::Mat dst;
+   // int rows = H;
+   // int cols = W;
+   dst.create(H, W, CV_8UC1);     
+   for(int v=0; v < H; v++) {
+     // const float* src_ptr = src.ptr<float>(v); 
+     std::uint8_t* dst_ptr = dst.ptr<std::uint8_t>(v);
+     for(int u=0; u< W; u++) {
+      float inv_depth_val = src_ptr[v * W + u];
+      if(inv_depth_val < minv) inv_depth_val = minv;// clip [far, near]
+      else if(inv_depth_val > maxv) inv_depth_val = maxv; 
+      dst_ptr[u] = static_cast<std::uint8_t>((inv_depth_val - minv) * 255. /(maxv - minv));// max=255, min=0
+     }
+   }
+  cv::imwrite(png, dst);
+}
+
 // Read a depth image with size H x W and save the depth values (in meters) into a float array (in row-major order)
 // The depth image file is assumed to be in 16-bit PNG format, depth in millimeters
 void ReadDepth(std::string filename, int H, int W, float * depth) {
-  // /*
+  /*
   cv::Mat depth_mat = cv::imread(filename, CV_LOAD_IMAGE_UNCHANGED);
   // cv::Mat depth_mat = cv::imread(filename, cv::IMREAD_ANYDEPTH);
   if (depth_mat.empty()) {
@@ -82,8 +106,8 @@ void ReadDepth(std::string filename, int H, int W, float * depth) {
     //   if (depth[r * W + c] > 14.0f) // Only consider depth < 6m
         depth[r * W + c] = 0;
     }
-  // */
-  /*
+  */
+  // /*
   cv::Mat img_depth=cv::imread(filename, cv::IMREAD_ANYDEPTH);
   if (img_depth.empty()) std::cerr << "failed to load image." << std::endl;
   cv::Mat depth_map;
@@ -108,8 +132,11 @@ void ReadDepth(std::string filename, int H, int W, float * depth) {
        // if(u == 350 && v == 400) std::cout << "u == 350 && v == 400 depth: " << val << std::endl;
     }
   }
-  */
+  imwrite_depth("depth.png", H, W, depth);
+  // */
 }
+
+
 
 // 4x4 matrix multiplication (matrices are stored as float arrays in row-major order)
 void multiply_matrix(const float m1[16], const float m2[16], float mOut[16]) {
