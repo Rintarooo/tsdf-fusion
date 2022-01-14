@@ -2,3 +2,4 @@ tsdf.bin
 tsdf.ply
 demo
 build/
+fountain/*

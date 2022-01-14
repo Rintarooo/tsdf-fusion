@@ -67,21 +67,24 @@ void Integrate(float * cam_K, float * cam2base, float * depth_im,
 // Loads a binary file with depth data and generates a TSDF voxel volume (5m x 5m x 5m at 1cm resolution)
 // Volume is aligned with respect to the camera coordinates of the first frame (a.k.a. base frame)
 int main(int argc, char * argv[]) {
-
-  // Location of camera intrinsic file
-  std::string cam_K_file = "data/camera-intrinsics.txt";
-  // std::string cam_K_file = "fountain/camera-intrinsics.txt";
-
-
   // Location of folder containing RGB-D frames and camera pose files
   std::string data_path = "data/rgbd-frames";
   // std::string data_path = "fountain";
+
+  // Location of camera intrinsic file
+  std::string cam_K_file = "data/camera-intrinsics.txt";
+  if(data_path == "fountain"){
+    cam_K_file = "fountain/camera-intrinsics.txt";
+  }
+
   int base_frame_idx = 150;
   int first_frame_idx = 150;
   float num_frames = 50;
-  // int base_frame_idx = 2;//150;
-  // int first_frame_idx = 2;//150;
-  // float num_frames = 7;//50;
+  if(data_path == "fountain"){
+    base_frame_idx = 2;//150;
+    first_frame_idx = 2;//150;
+    num_frames = 7;//50;
+  }
 
   float cam_K[3 * 3];
   float base2world[4 * 4];
@@ -89,8 +92,10 @@ int main(int argc, char * argv[]) {
   float cam2world[4 * 4];
   int im_width = 640;
   int im_height = 480;
-  // int im_width = 768;//640;
-  // int im_height = 512;//480;
+  if(data_path == "fountain"){
+    im_width = 768;//640;
+    im_height = 512;//480;
+  }
   float depth_im[im_height * im_width];
 
   // Voxel grid parameters (change these to change voxel grid resolution, etc.)
@@ -123,11 +128,15 @@ int main(int argc, char * argv[]) {
 
   // Read base frame camera pose
   std::ostringstream base_frame_prefix;
-  base_frame_prefix << std::setw(6) << std::setfill('0') << base_frame_idx;
-  // base_frame_prefix << base_frame_idx;
+  if(data_path == "data/rgbd-frames") base_frame_prefix << std::setw(6) << std::setfill('0') << base_frame_idx;
+  else if(data_path == "fountain") base_frame_prefix << base_frame_idx;
+  else std::cerr << "not found data_path" << std::endl;
+
   std::string base2world_file = data_path + "/frame-" + base_frame_prefix.str() + ".pose.txt";
-  // // std::string base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose.txt";
-  // std::string base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose-new.txt";
+  if(data_path == "fountain"){
+    // base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose.txt";
+    base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose-new.txt";
+  }
   std::vector<float> base2world_vec = LoadMatrixFromFile(base2world_file, 4, 4);
   std::copy(base2world_vec.begin(), base2world_vec.end(), base2world);
 
@@ -164,19 +173,24 @@ int main(int argc, char * argv[]) {
   for (int frame_idx = first_frame_idx; frame_idx < first_frame_idx + (int)num_frames; ++frame_idx) {
 
     std::ostringstream curr_frame_prefix;
-    curr_frame_prefix << std::setw(6) << std::setfill('0') << frame_idx;
-    // curr_frame_prefix << frame_idx;
-
+    if(data_path == "data/rgbd-frames") curr_frame_prefix << std::setw(6) << std::setfill('0') << frame_idx;
+    else if(data_path == "fountain") curr_frame_prefix << frame_idx;
+    else std::cerr << "not found data_path" << std::endl;
 
     // // Read current frame depth
     std::string depth_im_file = data_path + "/frame-" + curr_frame_prefix.str() + ".depth.png";
-    // std::string depth_im_file = data_path + "/inv" + curr_frame_prefix.str() + ".png";
+    if(data_path == "fountain"){
+      // depth_im_file = data_path + "/inv" + curr_frame_prefix.str() + ".png";
+      depth_im_file = data_path + "/000" + curr_frame_prefix.str() + "/Depth0001.exr";
+    }
     ReadDepth(depth_im_file, im_height, im_width, depth_im);
 
     // Read base frame camera pose
     std::string cam2world_file = data_path + "/frame-" + curr_frame_prefix.str() + ".pose.txt";
-    // // std::string cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose.txt";
-    // std::string cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose-new.txt";
+    if(data_path == "fountain"){
+      // cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose.txt";
+      cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose-new.txt";
+    }
     std::vector<float> cam2world_vec = LoadMatrixFromFile(cam2world_file, 4, 4);
     std::copy(cam2world_vec.begin(), cam2world_vec.end(), cam2world);
 
