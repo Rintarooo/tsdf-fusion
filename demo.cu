@@ -81,9 +81,9 @@ int main(int argc, char * argv[]) {
   int first_frame_idx = 150;
   float num_frames = 50;
   if(data_path == "fountain"){
-    base_frame_idx = 2;//150;
-    first_frame_idx = 2;//150;
-    num_frames = 7;//50;
+    base_frame_idx = 5;//2;
+    first_frame_idx = 5;//2;
+    num_frames = 4;//7;
   }
 
   float cam_K[3 * 3];
@@ -149,7 +149,7 @@ int main(int argc, char * argv[]) {
   std::string base2world_file = data_path + "/frame-" + base_frame_prefix.str() + ".pose.txt";
   if(data_path == "fountain"){
     // base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose.txt";
-    base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose-new.txt";
+    base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose-new.txt";// from world to base
   }
   std::vector<float> base2world_vec = LoadMatrixFromFile(base2world_file, 4, 4);
   std::copy(base2world_vec.begin(), base2world_vec.end(), base2world);
@@ -202,13 +202,13 @@ int main(int argc, char * argv[]) {
     // Read base frame camera pose
     std::string cam2world_file = data_path + "/frame-" + curr_frame_prefix.str() + ".pose.txt";
     if(data_path == "fountain"){
-      // cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose.txt";
-      cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose-new.txt";
+      // cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose.txt";// from camera to world, fail
+      cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose-new.txt";// from world to camera
     }
     std::vector<float> cam2world_vec = LoadMatrixFromFile(cam2world_file, 4, 4);
     std::copy(cam2world_vec.begin(), cam2world_vec.end(), cam2world);
 
-    // Compute relative camera pose (camera-to-base frame)
+    // Compute relative camera pose (camera-to-base frame) // from base to camera
     multiply_matrix(base2world_inv, cam2world, cam2base);
 
     cudaMemcpy(gpu_cam2base, cam2base, 4 * 4 * sizeof(float), cudaMemcpyHostToDevice);
