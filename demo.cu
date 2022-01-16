@@ -68,8 +68,8 @@ void Integrate(float * cam_K, float * cam2base, float * depth_im,
 // Volume is aligned with respect to the camera coordinates of the first frame (a.k.a. base frame)
 int main(int argc, char * argv[]) {
   // Location of folder containing RGB-D frames and camera pose files
-  // std::string data_path = "data/rgbd-frames";
-  std::string data_path = "fountain";
+  std::string data_path = "data/rgbd-frames";
+  // std::string data_path = "fountain";
 
   // Location of camera intrinsic file
   std::string cam_K_file = "data/camera-intrinsics.txt";

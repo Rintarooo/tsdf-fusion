@@ -91,7 +91,7 @@ void imwrite_depth(std::string png, int H, int W, float* src_ptr){
 // Read a depth image with size H x W and save the depth values (in meters) into a float array (in row-major order)
 // The depth image file is assumed to be in 16-bit PNG format, depth in millimeters
 void ReadDepth(std::string filename, int H, int W, float * depth) {
-  /*
+  
   cv::Mat depth_mat = cv::imread(filename, CV_LOAD_IMAGE_UNCHANGED);
   // cv::Mat depth_mat = cv::imread(filename, cv::IMREAD_ANYDEPTH);
   if (depth_mat.empty()) {
@@ -106,34 +106,34 @@ void ReadDepth(std::string filename, int H, int W, float * depth) {
     //   if (depth[r * W + c] > 14.0f) // Only consider depth < 6m
         depth[r * W + c] = 0;
     }
-  */
-  // /*
-  cv::Mat img_depth=cv::imread(filename, cv::IMREAD_ANYDEPTH);
-  if (img_depth.empty()) std::cerr << "failed to load image." << std::endl;
-  cv::Mat depth_map;
+  
+  // // /*
+  // cv::Mat img_depth=cv::imread(filename, cv::IMREAD_ANYDEPTH);
+  // if (img_depth.empty()) std::cerr << "failed to load image." << std::endl;
+  // cv::Mat depth_map;
 
-  // extract B from BGR．
-  std::vector<cv::Mat> planes;
-  cv::split(img_depth, planes);
-  depth_map = planes[0].clone();
+  // // extract B from BGR．
+  // std::vector<cv::Mat> planes;
+  // cv::split(img_depth, planes);
+  // depth_map = planes[0].clone();
 
-  cv::resize(depth_map, depth_map ,cv::Size(W, H));            
-  for(int v=0; v<depth_map.rows; v++) {
-    for(int u=0; u<depth_map.cols; u++) {
-       float val = depth_map.at<float>(v,u);
-       // const float invval = val>65500?0:1./val;
-       // std::cout << "depth : " << val << std::endl; 
-       // if(val < 1 || 20 < val) {// < 4, 14 < 
-       //  val = 0;
-       // }
-       depth[v * W + u] = val>65500?0:val;
+  // cv::resize(depth_map, depth_map ,cv::Size(W, H));            
+  // for(int v=0; v<depth_map.rows; v++) {
+  //   for(int u=0; u<depth_map.cols; u++) {
+  //      float val = depth_map.at<float>(v,u);
+  //      // const float invval = val>65500?0:1./val;
+  //      // std::cout << "depth : " << val << std::endl; 
+  //      // if(val < 1 || 20 < val) {// < 4, 14 < 
+  //      //  val = 0;
+  //      // }
+  //      depth[v * W + u] = val>65500?0:val;
 
-       // if(u == 10 && v == 10) std::cout << "u == 10 && v == 10 depth: " << val << std::endl;
-       // if(u == 350 && v == 400) std::cout << "u == 350 && v == 400 depth: " << val << std::endl;
-    }
-  }
-  imwrite_depth("depth.png", H, W, depth);
-  // */
+  //      // if(u == 10 && v == 10) std::cout << "u == 10 && v == 10 depth: " << val << std::endl;
+  //      // if(u == 350 && v == 400) std::cout << "u == 350 && v == 400 depth: " << val << std::endl;
+  //   }
+  // }
+  // imwrite_depth("depth.png", H, W, depth);
+  // // */
 }
 
 

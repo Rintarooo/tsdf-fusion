@@ -3,3 +3,4 @@ tsdf.ply
 demo
 build/
 fountain/*
+tum_rgbd/*
