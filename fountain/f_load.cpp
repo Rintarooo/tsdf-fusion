@@ -9,34 +9,37 @@
 
 
 void file_writer(const std::string &filename,
-    const cv::Mat &Rcw, const cv::Mat &tcw){
+    const cv::Mat &R_, const cv::Mat &t_){
     std::ofstream file2;
     file2.open(filename, std::ios::out);
-    float* Rcw_ptr = (float*)Rcw.data;// Mat.data returns uchar*, so cast into float* 
-    float R00, R01, R02;
-    float R10, R11, R12;
-    float R20, R21, R22;
+    // float* Rcw_ptr = (float*)Rcw.data;// Mat.data returns uchar*, so cast into float* 
+    // float R00, R01, R02;
+    // float R10, R11, R12;
+    // float R20, R21, R22;
    
-    R00 = Rcw_ptr[0];
-    R01 = Rcw_ptr[1];
-    R02 = Rcw_ptr[2];
-    R10 = Rcw_ptr[3];
-    R11 = Rcw_ptr[4];
-    R12 = Rcw_ptr[5];
-    R20 = Rcw_ptr[6];
-    R21 = Rcw_ptr[7];
-    R22 = Rcw_ptr[8];
+    // R00 = Rcw_ptr[0];
+    // R01 = Rcw_ptr[1];
+    // R02 = Rcw_ptr[2];
+    // R10 = Rcw_ptr[3];
+    // R11 = Rcw_ptr[4];
+    // R12 = Rcw_ptr[5];
+    // R20 = Rcw_ptr[6];
+    // R21 = Rcw_ptr[7];
+    // R22 = Rcw_ptr[8];
     
-    float* tcw_ptr = (float*)tcw.data;// Mat.data returns uchar*, so cast into float*
-    float tx, ty, tz;
-    tx = tcw_ptr[0];
-    ty = tcw_ptr[1];
-    tz = tcw_ptr[2];
+    // float* tcw_ptr = (float*)tcw.data;// Mat.data returns uchar*, so cast into float*
+    // float tx, ty, tz;
+    // tx = tcw_ptr[0];
+    // ty = tcw_ptr[1];
+    // tz = tcw_ptr[2];
 
-    file2 << R00 << R01 << R02 << std::endl;
-    file2 << R10 << R11 << R12 << std::endl;
-    file2 << R20 << R21 << R22 << std::endl;
-    file2 << tx << ty << tz << std::endl;
+    // file2 << R00 << R01 << R02 << std::endl;
+    // file2 << R10 << R11 << R12 << std::endl;
+    // file2 << R20 << R21 << R22 << std::endl;
+    // file2 << tx << ty << tz << std::endl;
+    file2 << R_.at<float>(0,0) << " " << R_.at<float>(0,1) << " " << R_.at<float>(0,2) << " " << t_.at<float>(0) << std::endl;
+    file2 << R_.at<float>(1,0) << " " << R_.at<float>(1,1) << " " << R_.at<float>(1,2) << " " << t_.at<float>(1) << std::endl;
+    file2 << R_.at<float>(2,0) << " " << R_.at<float>(2,1) << " " << R_.at<float>(2,2) << " " << t_.at<float>(2) << std::endl;
     file2.close();  
 }
 
