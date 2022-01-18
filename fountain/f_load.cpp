@@ -40,6 +40,7 @@ void file_writer(const std::string &filename,
     file2 << R_.at<float>(0,0) << " " << R_.at<float>(0,1) << " " << R_.at<float>(0,2) << " " << t_.at<float>(0) << std::endl;
     file2 << R_.at<float>(1,0) << " " << R_.at<float>(1,1) << " " << R_.at<float>(1,2) << " " << t_.at<float>(1) << std::endl;
     file2 << R_.at<float>(2,0) << " " << R_.at<float>(2,1) << " " << R_.at<float>(2,2) << " " << t_.at<float>(2) << std::endl;
+    file2 << 0.0 << " " << 0.0 << " " << 0.0 << " " << 1.0 << std::endl;
     file2.close();  
 }
 
@@ -98,8 +99,9 @@ void file_loader (const std::string &filename,
 
 	cv::Mat Rcw, tcw;
 	getRcw_fromRwc(Rwc, twc, Rcw, tcw);
-	
 	file_writer(filename_dst, Rcw, tcw);
+    // file_writer(filename_dst, Rwc, twc);
+    
     ifs.close();
 }
 
@@ -116,7 +118,8 @@ int main(int argc, char* argv[]){
     // const std::string dst= "inv2-pose-new.txt";
 	for (int i = 2; i <= 8; i++){
         const std::string src= "inv" + std::to_string(i) + "-pose.txt";
-        const std::string dst= "inv" + std::to_string(i) + "-pose-new.txt";
+        // const std::string dst= "inv" + std::to_string(i) + "-pose-wc.txt";
+        const std::string dst= "inv" + std::to_string(i) + "-pose-cw.txt";
         file_loader(src, dst);
     }
     return 0;

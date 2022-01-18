@@ -45,10 +45,6 @@ void Integrate(float * cam_K, float * cam2base, float * depth_im,
 
     float depth_val = depth_im[pt_pix_y * im_width + pt_pix_x];
 
-    // if (depth_val <= 0 || depth_val > 6)
-    // if (depth_val <= 4 || depth_val > 14)
-    //   continue;
-
     float diff = depth_val - pt_cam_z;
 
     if (diff <= -trunc_margin)
@@ -68,7 +64,8 @@ void Integrate(float * cam_K, float * cam2base, float * depth_im,
 // Volume is aligned with respect to the camera coordinates of the first frame (a.k.a. base frame)
 int main(int argc, char * argv[]) {
   // Location of folder containing RGB-D frames and camera pose files
-  std::string data_path = "data/rgbd-frames";
+  // std::string data_path = "data/rgbd-frames";
+  std::string data_path = "data/seq-01";
   // std::string data_path = "fountain";
 
   // Location of camera intrinsic file
@@ -77,14 +74,20 @@ int main(int argc, char * argv[]) {
     cam_K_file = "fountain/camera-intrinsics.txt";
   }
 
-  int base_frame_idx = 150;
-  int first_frame_idx = 150;
-  float num_frames = 50;
+  // int base_frame_idx = 150;
+  // int first_frame_idx = 150;
+  // float num_frames = 50;// 1
+  int base_frame_idx = 0;
+  int first_frame_idx = 0;
+  float num_frames = 999;
   if(data_path == "fountain"){
-    base_frame_idx = 5;//2;
-    first_frame_idx = 5;//2;
-    num_frames = 4;//7;
-  }
+    base_frame_idx = 2;
+    first_frame_idx = 2;
+    num_frames = 5;
+   // base_frame_idx = 5;//2;
+   //  first_frame_idx = 5;//2;
+   //  num_frames = 4;//7;
+   }
 
   float cam_K[3 * 3];
   float base2world[4 * 4];
@@ -110,7 +113,7 @@ int main(int argc, char * argv[]) {
   float voxel_size = 0.006f;
   float trunc_margin = voxel_size * 5;
   if(data_path == "fountain"){
-    voxel_size = 0.030f;
+    voxel_size = 0.090f;// 0.030f;
     trunc_margin = voxel_size * 5;
   }
   int voxel_grid_dim_x = 500;
@@ -143,13 +146,14 @@ int main(int argc, char * argv[]) {
   // Read base frame camera pose
   std::ostringstream base_frame_prefix;
   if(data_path == "data/rgbd-frames") base_frame_prefix << std::setw(6) << std::setfill('0') << base_frame_idx;
+  else if(data_path == "data/seq-01") base_frame_prefix << std::setw(6) << std::setfill('0') << base_frame_idx;
   else if(data_path == "fountain") base_frame_prefix << base_frame_idx;
   else std::cerr << "not found data_path" << std::endl;
 
   std::string base2world_file = data_path + "/frame-" + base_frame_prefix.str() + ".pose.txt";
   if(data_path == "fountain"){
-    // base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose.txt";
-    base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose-new.txt";// from world to base
+    // base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose-cw.txt";// from world to base
+    base2world_file = data_path + "/inv" + base_frame_prefix.str() + "-pose-wc.txt";// from base to world
   }
   std::vector<float> base2world_vec = LoadMatrixFromFile(base2world_file, 4, 4);
   std::copy(base2world_vec.begin(), base2world_vec.end(), base2world);
@@ -188,6 +192,7 @@ int main(int argc, char * argv[]) {
 
     std::ostringstream curr_frame_prefix;
     if(data_path == "data/rgbd-frames") curr_frame_prefix << std::setw(6) << std::setfill('0') << frame_idx;
+    else if(data_path == "data/seq-01") curr_frame_prefix << std::setw(6) << std::setfill('0') << frame_idx;
     else if(data_path == "fountain") curr_frame_prefix << frame_idx;
     else std::cerr << "not found data_path" << std::endl;
 
@@ -202,14 +207,22 @@ int main(int argc, char * argv[]) {
     // Read base frame camera pose
     std::string cam2world_file = data_path + "/frame-" + curr_frame_prefix.str() + ".pose.txt";
     if(data_path == "fountain"){
-      // cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose.txt";// from camera to world, fail
-      cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose-new.txt";// from world to camera
+      // cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose-cw.txt";// from world to camera
+      cam2world_file = data_path + "/inv" + curr_frame_prefix.str() + "-pose-wc.txt";// from camera to world
     }
     std::vector<float> cam2world_vec = LoadMatrixFromFile(cam2world_file, 4, 4);
+    // for (auto i: cam2world_vec){
+    //   std::cout << "pose: " << i << std::endl;
+    // }
     std::copy(cam2world_vec.begin(), cam2world_vec.end(), cam2world);
 
-    // Compute relative camera pose (camera-to-base frame) // from base to camera
+    // Compute relative camera pose (camera-to-base frame) // cam2base: from camera to base
     multiply_matrix(base2world_inv, cam2world, cam2base);
+    // // debug
+    // for(int d=0; d < 16; d++){
+    //   std::cout << "debug pose: " << cam2base[d] << std::endl;
+    // }
+
 
     cudaMemcpy(gpu_cam2base, cam2base, 4 * 4 * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(gpu_depth_im, depth_im, im_height * im_width * sizeof(float), cudaMemcpyHostToDevice);

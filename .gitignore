@@ -4,3 +4,4 @@ demo
 build/
 fountain/*
 tum_rgbd/*
+data/seq-01/*
